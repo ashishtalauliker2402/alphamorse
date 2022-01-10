@@ -1,0 +1,46 @@
+{% extends 'morse/base.html' %}
+{% block content %}
+{% load static %}
+<div class="jumbotron vertical-center">
+    <div class="container text-center">
+        <!-- <textarea class="center" name="textey" id="textey" cols="100" rows="5"></textarea> -->
+        <div class="md-form mb-4 pink-textarea active-pink-textarea">
+            <textarea id="textey" class="md-textarea form-control" rows="3"></textarea>
+        </div>
+        <br >
+        <button class="btn btn-primary" name="sendey" id="sendey"> Create Morse Audio File</button>
+    </div>
+    <div class="audioctn container text-center">
+        <audio id="morseaudio" src="" style="width: 70%;" controls>
+            <!-- <source src="" type="audio/wav"> -->
+        </audio>
+    </div>
+</div>
+
+
+<script>
+    const csrftoken = Cookies.get('csrftoken');
+    $(document).ready(function() {
+        $('#sendey').on('click', function() {
+            var txt = $('#textey').val();
+            console.log(txt);
+            $.ajax({
+                type: 'POST',
+                headers: {'X-CSRFToken': csrftoken},
+                mode: 'same-origin',
+                url: "{% url 'convert' %}",
+                data: { 'words': txt },
+                dataType: 'text',
+                success: function(res) {
+                    console.log(res);
+                    $('#morseaudio').attr('src', "{% static 'uploads/output.wav' %}");
+                    $('#morseaudio').load();
+                },
+                error: function() {
+                    console.log('failure');
+                }
+            })
+        });
+    });
+</script>
+{% endblock content %}
